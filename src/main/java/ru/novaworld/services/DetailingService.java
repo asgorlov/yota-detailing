@@ -92,11 +92,9 @@ public class DetailingService {
             }
 
             System.out.println(
-                    '{' +
-                    "data=" + dateFormat.format(detail.getDate()) + ", " +
-                    "type=" + detail.getType() + ", " +
-                    "quantity=" + quantity +
-                    '}'
+                    "Дата=|" + dateFormat.format(detail.getDate()) + "| " +
+                    "Услуга=|" + detail.getType() + "| " +
+                    "Объем=|" + quantity + "|"
             );
         }));
     }
@@ -145,14 +143,6 @@ public class DetailingService {
         return addZeroTo(hours) + ':' + addZeroTo(minutes) + ':' + addZeroTo(seconds);
     }
 
-    private String addZeroTo(int time) {
-        String strTime = Integer.toString(time);
-        if (strTime.length() == 1) {
-            return  '0' + strTime;
-        }
-        return strTime;
-    }
-
     public int getSmsQuantityInPieces(String smsQuantity) {
         try {
             return Integer.parseInt(smsQuantity.split(" ")[0]);
@@ -165,7 +155,11 @@ public class DetailingService {
     }
 
     public String getFormattedSms(int quantity) {
-        return quantity + " шт.";
+        return quantity + " шт";
+    }
+
+    public boolean areDetailDatesEqual(Date date1, Date date2) {
+        return dateFormat.format(date1).equals(dateFormat.format(date2));
     }
 
     private int convertCallTime(String strHours, String strMinutes, String strSeconds) {
@@ -209,5 +203,13 @@ public class DetailingService {
         }
 
         return cells;
+    }
+
+    private String addZeroTo(int time) {
+        String strTime = Integer.toString(time);
+        if (strTime.length() == 1) {
+            return  '0' + strTime;
+        }
+        return strTime;
     }
 }
