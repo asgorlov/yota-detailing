@@ -49,7 +49,7 @@ public class DetailingService {
                         return new YotaSms(
                                 dateFormat.parse(cells.get(0)),
                                 cells.get(3),
-                                getSmsQuantityInPieces(cells.get(7)));
+                                getSmsQuantityInPieces(cells));
                     default:
                         dateFormat.parse(cells.get(0));
                         System.out.println("Unknown type of yota detail from exel row");
@@ -148,7 +148,8 @@ public class DetailingService {
         return addZeroTo(hours) + ':' + addZeroTo(minutes) + ':' + addZeroTo(seconds);
     }
 
-    public int getSmsQuantityInPieces(String smsQuantity) {
+    public int getSmsQuantityInPieces(List<String> cells) {
+        String smsQuantity = findSmsQuantity(cells);
         try {
             return Integer.parseInt(smsQuantity.split(" ")[0]);
         } catch (NumberFormatException e) {
@@ -226,7 +227,7 @@ public class DetailingService {
         }
 
         System.out.println("Can't find traffic quantity in cell array.");
-        return "0.0";
+        return TRAFFIC_DEFAULT_VALUE;
     }
 
     private boolean isTraffic(String value) {
@@ -245,7 +246,7 @@ public class DetailingService {
         }
 
         System.out.println("Can't find call time quantity in cell array.");
-        return "00:00:00";
+        return CALL_TIME_DEFAULT_VALUE;
     }
 
     private boolean isCallTime(String value) {
@@ -255,6 +256,25 @@ public class DetailingService {
             Pattern regexp = Pattern.compile("\\b\\d{2}:\\d{2}\\b");
             Matcher match = regexp.matcher(value);
             return match.find();
+        }
+    }
+
+    private String findSmsQuantity(List<String> cells) {
+        if (isSmsQuantity(cells.get(7))) return cells.get(7);
+
+        for (String cell : cells) {
+            if (isSmsQuantity(cell)) return cell;
+        }
+
+        System.out.println("Can't find sms quantity in cell array.");
+        return SMS_DEFAULT_VALUE;
+    }
+
+    private boolean isSmsQuantity(String value) {
+        if (value.isEmpty()) {
+            return false;
+        } else {
+            return value.contains("шт");
         }
     }
 }
