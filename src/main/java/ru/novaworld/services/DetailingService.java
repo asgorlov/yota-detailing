@@ -14,6 +14,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ru.novaworld.constants.Constants.*;
 
@@ -42,7 +44,7 @@ public class DetailingService {
                         return new YotaCall(
                                 dateFormat.parse(cells.get(0)),
                                 cells.get(3),
-                                getCallTimeInSeconds(cells.get(7)));
+                                getCallTimeInSeconds(cells));
                     case SMS:
                         return new YotaSms(
                                 dateFormat.parse(cells.get(0)),
@@ -128,7 +130,8 @@ public class DetailingService {
         return String.format("%.2f",megabytes) + " Mb";
     }
 
-    public int getCallTimeInSeconds(String callTime) {
+    public int getCallTimeInSeconds(List<String> cells) {
+        String callTime = findCallTimeIn(cells);
         String[] timeArray = callTime.split(" ")[0].split(":");
         if (timeArray.length < 3) {
             return convertCallTime("00", timeArray[0], timeArray[1]);
@@ -231,6 +234,27 @@ public class DetailingService {
             return false;
         } else {
             return value.contains("Mb") || value.contains("Gb");
+        }
+    }
+
+    private String findCallTimeIn(List<String> cells) {
+        if (isCallTime(cells.get(7))) return cells.get(7);
+
+        for (String cell : cells) {
+            if (isCallTime(cell)) return cell;
+        }
+
+        System.out.println("Can't find call time quantity in cell array.");
+        return "00:00:00";
+    }
+
+    private boolean isCallTime(String value) {
+        if (value.isEmpty()) {
+            return false;
+        } else {
+            Pattern regexp = Pattern.compile("\\b\\d{2}:\\d{2}\\b");
+            Matcher match = regexp.matcher(value);
+            return match.find();
         }
     }
 }

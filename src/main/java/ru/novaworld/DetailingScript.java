@@ -13,7 +13,7 @@ public class DetailingScript {
     private final DetailingService detailingService = new DetailingService();
     private final FileService fileService = new FileService();
 
-    private final Map<Date, List<YotaDetail>> monthlyDetails = new HashMap<>();
+    private final Map<Date, List<YotaDetail>> monthlyDetails = new TreeMap<>();
 
     public void execute(String path) {
         List<XSSFWorkbook> workbooks = fileService.getWorkbooksFrom(path);
