@@ -2,14 +2,14 @@ package ru.novaworld.services;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static ru.novaworld.constants.Constants.XLSX_TYPE;
 import static ru.novaworld.constants.Constants.XLS_TYPE;
@@ -40,5 +40,32 @@ public class FileService {
         }
 
         return workbooks;
+    }
+
+    public void createDetailingExelFile(List<String> detailList) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("Detailing");
+
+        int rowCounter = 0;
+        Row rowHeader = sheet.createRow(rowCounter);
+        rowHeader.createCell(0).setCellValue("Дата");
+        rowHeader.createCell(1).setCellValue("Услуга");
+        rowHeader.createCell(2).setCellValue("Объем");
+
+        for(String detail : detailList) {
+            String[] yotaObjectFields = detail.split("\\|");
+            Row row = sheet.createRow(++rowCounter);
+            row.createCell(0).setCellValue(yotaObjectFields[0]);
+            row.createCell(1).setCellValue(yotaObjectFields[1]);
+            row.createCell(2).setCellValue(yotaObjectFields[2]);
+        }
+
+        try (FileOutputStream out = new FileOutputStream("yota detailing.xlsx")) {
+            workbook.write(out);
+            System.out.println("Excel file has been successfully created!");
+        } catch (IOException e) {
+            System.out.println("Can't create exel file");
+            e.printStackTrace();
+        }
     }
 }

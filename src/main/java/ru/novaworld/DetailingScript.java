@@ -50,7 +50,18 @@ public class DetailingScript {
                 }
 
                 System.out.println("-----------------------------------------------------------------------------");
-                detailingService.printDetailsFrom(monthlyDetails);
+                List<String> detailsList = detailingService.detailsFieldsToString(monthlyDetails);
+
+                detailsList.forEach((detail) -> {
+                    String[] yotaObjectFields = detail.split("\\|");
+                    System.out.println(
+                            "Дата=|" + yotaObjectFields[0] + "| " +
+                            "Услуга=|" + yotaObjectFields[1] + "| " +
+                            "Объем=|" + yotaObjectFields[2] + "|"
+                    );
+                });
+
+                fileService.createDetailingExelFile(detailsList);
             });
         }
     }

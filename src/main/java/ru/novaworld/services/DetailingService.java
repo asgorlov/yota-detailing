@@ -83,7 +83,9 @@ public class DetailingService {
         return new ArrayList<>(summarizedDetailsForMonth.values());
     }
 
-    public void printDetailsFrom(Map<Date, List<YotaDetail>> details) {
+    public List<String> detailsFieldsToString(Map<Date, List<YotaDetail>> details) {
+        List<String> detailsStringList = new ArrayList<>();
+
         details.forEach((key, detailList) -> detailList.forEach((detail) -> {
             String quantity;
             if (detail instanceof YotaInternet) {
@@ -93,13 +95,10 @@ public class DetailingService {
             } else {
                 quantity = getFormattedSms(((YotaSms) detail).getQuantity());
             }
-
-            System.out.println(
-                    "Дата=|" + dateFormat.format(detail.getDate()) + "| " +
-                    "Услуга=|" + detail.getType() + "| " +
-                    "Объем=|" + quantity + "|"
-            );
+            detailsStringList.add(dateFormat.format(detail.getDate()) + "|" + detail.getType() + "|" + quantity);
         }));
+
+        return detailsStringList;
     }
 
     public double getInternetTrafficInMb(List<String> cells) {

@@ -2,7 +2,7 @@ package ru.novaworld.models;
 
 import java.util.Date;
 
-public class YotaDetail {
+public abstract class YotaDetail {
     private Date date;
     private String type;
 
