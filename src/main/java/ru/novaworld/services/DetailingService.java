@@ -29,18 +29,19 @@ public class DetailingService {
         List<String> cells = getCellsFrom(row);
 
         try {
+            cells.set(3, cells.get(3).replace("  ", " ").replace("\n", " "));
             String[] detailType = cells.get(3).split(" ");
             if (detailType.length > 1) {
-                switch (detailType[1]) {
+                switch (detailType[1].replace(":", "")) {
                     case INTERNET:
                         return new YotaInternet(
                                 dateFormat.parse(cells.get(0)),
                                 cells.get(3),
-                                getInternetTrafficInMb(cells.get(7)));
+                                getInternetTrafficInMb(cells));
                     case CALLS:
                         return new YotaCall(
                                 dateFormat.parse(cells.get(0)),
-                                cells.get(3).replace("\n", " "),
+                                cells.get(3),
                                 getCallTimeInSeconds(cells.get(7)));
                     case SMS:
                         return new YotaSms(
@@ -99,7 +100,8 @@ public class DetailingService {
         }));
     }
 
-    public double getInternetTrafficInMb(String internetTraffic) {
+    public double getInternetTrafficInMb(List<String> cells) {
+        String internetTraffic = findTrafficQuantityIn(cells);
         String[] trafficArray = internetTraffic.split(" ");
         try {
             String traffic = trafficArray[0].replace(',', '.');
@@ -211,5 +213,24 @@ public class DetailingService {
             return  '0' + strTime;
         }
         return strTime;
+    }
+
+    private String findTrafficQuantityIn(List<String> cells) {
+        if (isTraffic(cells.get(7))) return cells.get(7);
+
+        for (String cell : cells) {
+            if (isTraffic(cell)) return cell;
+        }
+
+        System.out.println("Can't find traffic quantity in cell array.");
+        return "0.0";
+    }
+
+    private boolean isTraffic(String value) {
+        if (value.isEmpty()) {
+            return false;
+        } else {
+            return value.contains("Mb") || value.contains("Gb");
+        }
     }
 }
